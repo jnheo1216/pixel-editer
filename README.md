@@ -34,6 +34,13 @@ npm install
 npm run dev
 ```
 
+## Vercel 배포
+
+1. Vercel에서 이 저장소를 Import합니다.
+2. Framework Preset은 `Vite`를 사용합니다.
+3. Build Command는 `npm run build`, Output Directory는 `dist`로 설정됩니다.
+4. 루트의 `vercel.json`이 자동으로 위 설정을 고정합니다.
+
 ## 스크립트
 
 ```bash
