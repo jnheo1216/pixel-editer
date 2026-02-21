@@ -4,7 +4,9 @@ import { useEditorStore } from '../../../state/editorStore';
 
 export function SettingsPanel() {
   const pixelDocument = useEditorStore((state) => state.document);
+  const hitboxInsetPercent = useEditorStore((state) => state.ui.hitboxInsetPercent);
   const applySettings = useEditorStore((state) => state.applySettings);
+  const setHitboxInsetPercent = useEditorStore((state) => state.setHitboxInsetPercent);
 
   const widthRef = useRef<HTMLInputElement | null>(null);
   const heightRef = useRef<HTMLInputElement | null>(null);
@@ -73,7 +75,25 @@ export function SettingsPanel() {
             className="settings-input"
           />
         </label>
+
       </div>
+
+      <label htmlFor="hitbox-inset" className="mt-3 block text-sm font-semibold text-slate-700">
+        픽셀 인식 여백: {hitboxInsetPercent}%
+      </label>
+      <input
+        id="hitbox-inset"
+        type="range"
+        min={0}
+        max={40}
+        step={1}
+        value={hitboxInsetPercent}
+        onChange={(event) => setHitboxInsetPercent(Number(event.target.value))}
+        className="w-full accent-teal-600"
+      />
+      <p className="mt-1 text-xs text-slate-500">
+        값이 클수록 픽셀 중심에 가까운 클릭만 인식합니다.
+      </p>
 
       <button type="button" onClick={handleApply} className="primary-button mt-4 w-full">
         캔버스 적용

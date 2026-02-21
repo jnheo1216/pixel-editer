@@ -8,6 +8,8 @@ import {
 } from 'react';
 
 import {
+  MAX_HITBOX_INSET_PERCENT,
+  MIN_HITBOX_INSET_PERCENT,
   clamp,
   getLayerIndexById,
   isPointInBounds,
@@ -27,6 +29,8 @@ interface Geometry {
   originX: number;
   originY: number;
 }
+
+const PIXEL_HIT_DISABLE_CELL_SIZE = 8;
 
 function getGeometry(
   container: HTMLElement,
@@ -57,11 +61,34 @@ function toPixelPoint(
   clientY: number,
   container: HTMLElement,
   geometry: Geometry,
-): PixelPoint {
+  hitboxInsetPercent: number,
+): PixelPoint | null {
   const bounds = container.getBoundingClientRect();
 
-  const x = Math.floor((clientX - bounds.left - geometry.originX) / geometry.cellSize);
-  const y = Math.floor((clientY - bounds.top - geometry.originY) / geometry.cellSize);
+  const localX = clientX - bounds.left - geometry.originX;
+  const localY = clientY - bounds.top - geometry.originY;
+  const x = Math.floor(localX / geometry.cellSize);
+  const y = Math.floor(localY / geometry.cellSize);
+
+  if (x < 0 || y < 0) {
+    return null;
+  }
+
+  const offsetX = localX - x * geometry.cellSize;
+  const offsetY = localY - y * geometry.cellSize;
+  const hitboxInsetRatio =
+    clamp(hitboxInsetPercent, MIN_HITBOX_INSET_PERCENT, MAX_HITBOX_INSET_PERCENT) / 100;
+
+  if (geometry.cellSize > PIXEL_HIT_DISABLE_CELL_SIZE) {
+    const inset = Math.min(geometry.cellSize * hitboxInsetRatio, geometry.cellSize / 2 - 0.5);
+
+    const isInsideActiveX = offsetX >= inset && offsetX <= geometry.cellSize - inset;
+    const isInsideActiveY = offsetY >= inset && offsetY <= geometry.cellSize - inset;
+
+    if (!isInsideActiveX || !isInsideActiveY) {
+      return null;
+    }
+  }
 
   return { x, y };
 }
@@ -88,6 +115,7 @@ export function CanvasViewport() {
   const pixelDocument = useEditorStore((state) => state.document);
   const viewport = useEditorStore((state) => state.ui.viewport);
   const brushSize = useEditorStore((state) => state.ui.brushSize);
+  const hitboxInsetPercent = useEditorStore((state) => state.ui.hitboxInsetPercent);
   const activeTool = useEditorStore((state) => state.ui.activeTool);
 
   const startStroke = useEditorStore((state) => state.startStroke);
@@ -230,9 +258,15 @@ export function CanvasViewport() {
     }
 
     const geometry = getGeometry(container, pixelDocument, viewport);
-    const point = toPixelPoint(event.clientX, event.clientY, container, geometry);
+    const point = toPixelPoint(
+      event.clientX,
+      event.clientY,
+      container,
+      geometry,
+      hitboxInsetPercent,
+    );
 
-    if (!isPointInBounds(point, pixelDocument)) {
+    if (!point || !isPointInBounds(point, pixelDocument)) {
       return;
     }
 
@@ -262,11 +296,18 @@ export function CanvasViewport() {
     }
 
     const geometry = getGeometry(container, pixelDocument, viewport);
-    const point = toPixelPoint(event.clientX, event.clientY, container, geometry);
-    setHoverPoint(isPointInBounds(point, pixelDocument) ? point : null);
+    const point = toPixelPoint(
+      event.clientX,
+      event.clientY,
+      container,
+      geometry,
+      hitboxInsetPercent,
+    );
+    const validPoint = point && isPointInBounds(point, pixelDocument) ? point : null;
+    setHoverPoint(validPoint);
 
-    if (drawingRef.current) {
-      continueStroke(point);
+    if (drawingRef.current && validPoint) {
+      continueStroke(validPoint);
     }
   };
 

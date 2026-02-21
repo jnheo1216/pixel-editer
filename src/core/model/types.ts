@@ -4,6 +4,7 @@ export const DEFAULT_CANVAS_WIDTH = 32;
 export const DEFAULT_CANVAS_HEIGHT = 32;
 export const DEFAULT_PIXEL_SIZE = 16;
 export const DEFAULT_BRUSH_SIZE = 1;
+export const DEFAULT_HITBOX_INSET_PERCENT = 20;
 
 export const MIN_CANVAS_SIZE = 1;
 export const MAX_CANVAS_SIZE = 256;
@@ -11,6 +12,8 @@ export const MIN_PIXEL_SIZE = 4;
 export const MAX_PIXEL_SIZE = 40;
 export const MIN_BRUSH_SIZE = 1;
 export const MAX_BRUSH_SIZE = 32;
+export const MIN_HITBOX_INSET_PERCENT = 0;
+export const MAX_HITBOX_INSET_PERCENT = 40;
 
 export const MAX_LAYER_COUNT = 16;
 export const HISTORY_LIMIT = 100;
@@ -77,6 +80,7 @@ export interface UIState {
   activeTool: ToolId;
   selectedColor: number;
   brushSize: number;
+  hitboxInsetPercent: number;
   viewport: ViewportState;
 }
 

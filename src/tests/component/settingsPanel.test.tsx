@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -32,5 +32,14 @@ describe('SettingsPanel', () => {
     expect(document.width).toBe(40);
     expect(document.height).toBe(20);
     expect(document.pixelSize).toBe(10);
+  });
+
+  it('updates hitbox inset percentage from slider', () => {
+    render(<SettingsPanel />);
+
+    const slider = screen.getByRole('slider', { name: /픽셀 인식 여백/ });
+    fireEvent.change(slider, { target: { value: '35' } });
+
+    expect(useEditorStore.getState().ui.hitboxInsetPercent).toBe(35);
   });
 });

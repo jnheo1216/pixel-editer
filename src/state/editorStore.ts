@@ -4,10 +4,13 @@ import { create } from 'zustand';
 
 import {
   DEFAULT_BRUSH_SIZE,
+  DEFAULT_HITBOX_INSET_PERCENT,
   HISTORY_LIMIT,
   MAX_BRUSH_SIZE,
+  MAX_HITBOX_INSET_PERCENT,
   MAX_LAYER_COUNT,
   MIN_BRUSH_SIZE,
+  MIN_HITBOX_INSET_PERCENT,
   clamp,
   cloneDocument,
   createInitialDocument,
@@ -23,6 +26,7 @@ import {
   type PixelPoint,
   type StrokeSession,
   type ToolId,
+  type UIState,
   type ViewportState,
 } from '../core/model/types';
 import { getBrushIndices, rasterizeLine } from '../core/tools/brushMath';
@@ -39,17 +43,13 @@ interface ReplaceDocumentOptions {
 
 export interface EditorStore {
   document: PixelDocument;
-  ui: {
-    activeTool: ToolId;
-    selectedColor: number;
-    brushSize: number;
-    viewport: ViewportState;
-  };
+  ui: UIState;
   history: ReturnType<typeof createInitialHistoryState>;
   stroke: StrokeSession | null;
   setActiveTool: (toolId: ToolId) => void;
   setSelectedColorHex: (hexColor: string) => void;
   setBrushSize: (brushSize: number) => void;
+  setHitboxInsetPercent: (percent: number) => void;
   setViewport: (nextViewport: Partial<ViewportState>) => void;
   panViewport: (deltaX: number, deltaY: number) => void;
   startStroke: (point: PixelPoint) => void;
@@ -81,6 +81,7 @@ export function createInitialEditorData(): InitialEditorData {
       activeTool: 'pencil',
       selectedColor: hexToRgbaUint('#0f172a'),
       brushSize: DEFAULT_BRUSH_SIZE,
+      hitboxInsetPercent: DEFAULT_HITBOX_INSET_PERCENT,
       viewport: {
         zoom: 1,
         panX: 0,
@@ -150,6 +151,18 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     set((state) =>
       produce(state, (draft) => {
         draft.ui.brushSize = nextSize;
+      }),
+    );
+  },
+  setHitboxInsetPercent: (percent) => {
+    const nextPercent = clamp(
+      Math.round(percent),
+      MIN_HITBOX_INSET_PERCENT,
+      MAX_HITBOX_INSET_PERCENT,
+    );
+    set((state) =>
+      produce(state, (draft) => {
+        draft.ui.hitboxInsetPercent = nextPercent;
       }),
     );
   },
