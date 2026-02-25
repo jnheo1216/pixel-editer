@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <defs>
+    <pattern id="checker" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect width="8" height="8" fill="#f4e5b5" />
+      <rect width="4" height="4" fill="#e6d39b" />
+      <rect x="4" y="4" width="4" height="4" fill="#e6d39b" />
+    </pattern>
+  </defs>
+  <rect width="64" height="64" fill="#f6eed4" />
+  <rect x="4" y="4" width="56" height="56" fill="#222a3f" />
+  <rect x="8" y="8" width="48" height="48" fill="url(#checker)" />
+  <rect x="16" y="28" width="32" height="8" fill="#1b2333" />
+  <rect x="28" y="16" width="8" height="32" fill="#1b2333" />
+  <rect x="28" y="28" width="8" height="8" fill="#1ebcd7" />
+  <rect x="16" y="16" width="8" height="8" fill="#f3813a" />
+  <rect x="40" y="16" width="8" height="8" fill="#1ebcd7" />
+  <rect x="40" y="40" width="8" height="8" fill="#7ec52d" />
+</svg>
