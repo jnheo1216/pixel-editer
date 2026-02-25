@@ -4,7 +4,7 @@ export const DEFAULT_CANVAS_WIDTH = 32;
 export const DEFAULT_CANVAS_HEIGHT = 32;
 export const DEFAULT_PIXEL_SIZE = 16;
 export const DEFAULT_BRUSH_SIZE = 1;
-export const DEFAULT_HITBOX_INSET_PERCENT = 20;
+export const DEFAULT_HITBOX_INSET_PERCENT = 8;
 
 export const MIN_CANVAS_SIZE = 1;
 export const MAX_CANVAS_SIZE = 256;
