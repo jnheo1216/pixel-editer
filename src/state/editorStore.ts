@@ -50,6 +50,7 @@ export interface EditorStore {
   setSelectedColorHex: (hexColor: string) => void;
   setBrushSize: (brushSize: number) => void;
   setHitboxInsetPercent: (percent: number) => void;
+  setCompactPanelsEnabled: (enabled: boolean) => void;
   setViewport: (nextViewport: Partial<ViewportState>) => void;
   panViewport: (deltaX: number, deltaY: number) => void;
   startStroke: (point: PixelPoint) => void;
@@ -82,6 +83,7 @@ export function createInitialEditorData(): InitialEditorData {
       selectedColor: hexToRgbaUint('#0f172a'),
       brushSize: DEFAULT_BRUSH_SIZE,
       hitboxInsetPercent: DEFAULT_HITBOX_INSET_PERCENT,
+      compactPanelsEnabled: false,
       viewport: {
         zoom: 1,
         panX: 0,
@@ -163,6 +165,13 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     set((state) =>
       produce(state, (draft) => {
         draft.ui.hitboxInsetPercent = nextPercent;
+      }),
+    );
+  },
+  setCompactPanelsEnabled: (enabled) => {
+    set((state) =>
+      produce(state, (draft) => {
+        draft.ui.compactPanelsEnabled = enabled;
       }),
     );
   },

@@ -1,5 +1,6 @@
 import { useMemo, useRef } from 'react';
 
+import { DockPanel } from '../../../app/layout/DockPanel';
 import { useEditorStore } from '../../../state/editorStore';
 
 export function SettingsPanel() {
@@ -16,6 +17,7 @@ export function SettingsPanel() {
     () => `${pixelDocument.width}-${pixelDocument.height}-${pixelDocument.pixelSize}`,
     [pixelDocument.width, pixelDocument.height, pixelDocument.pixelSize],
   );
+  const panelSummary = `${pixelDocument.width}×${pixelDocument.height} / ${pixelDocument.pixelSize}px`;
 
   const handleApply = (): void => {
     const nextWidth = Number.parseInt(
@@ -35,9 +37,7 @@ export function SettingsPanel() {
   };
 
   return (
-    <section className="panel">
-      <h2 className="panel-title">설정</h2>
-      <p className="panel-kicker">Canvas Rules</p>
+    <DockPanel title="설정" kicker="Canvas Rules" summary={panelSummary}>
       <p className="panel-note">캔버스 범위: 1~256, 픽셀 크기: 4~40</p>
 
       <div key={formKey} className="mt-3 space-y-2">
@@ -99,6 +99,6 @@ export function SettingsPanel() {
       <button type="button" onClick={handleApply} className="primary-button mt-4 w-full">
         캔버스 적용
       </button>
-    </section>
+    </DockPanel>
   );
 }

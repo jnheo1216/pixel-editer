@@ -1,3 +1,4 @@
+import { DockPanel } from '../../../app/layout/DockPanel';
 import { TOOL_DEFINITIONS } from '../../../core/tools/toolRegistry';
 import { useEditorStore } from '../../../state/editorStore';
 
@@ -6,12 +7,11 @@ export function ToolPanel() {
   const brushSize = useEditorStore((state) => state.ui.brushSize);
   const setActiveTool = useEditorStore((state) => state.setActiveTool);
   const setBrushSize = useEditorStore((state) => state.setBrushSize);
+  const activeToolLabel = TOOL_DEFINITIONS.find((tool) => tool.id === activeTool)?.label ?? activeTool;
+  const panelSummary = `${activeToolLabel} · ${brushSize}px`;
 
   return (
-    <section className="panel">
-      <h2 className="panel-title">도구</h2>
-      <p className="panel-kicker">Stroke Control</p>
-
+    <DockPanel title="도구" kicker="Stroke Control" summary={panelSummary}>
       <div className="tool-grid">
         {TOOL_DEFINITIONS.map((tool) => (
           <button
@@ -40,6 +40,6 @@ export function ToolPanel() {
           className="pixel-range"
         />
       </div>
-    </section>
+    </DockPanel>
   );
 }

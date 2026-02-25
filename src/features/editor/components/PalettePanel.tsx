@@ -1,3 +1,4 @@
+import { DockPanel } from '../../../app/layout/DockPanel';
 import { rgbaUintToHex } from '../../../core/model/types';
 import { useEditorStore } from '../../../state/editorStore';
 
@@ -27,10 +28,7 @@ export function PalettePanel() {
   const selectedHex = rgbaUintToHex(selectedColor);
 
   return (
-    <section className="panel">
-      <h2 className="panel-title">팔레트</h2>
-      <p className="panel-kicker">Color Deck</p>
-
+    <DockPanel title="팔레트" kicker="Color Deck" summary={selectedHex.toUpperCase()}>
       <div className="palette-grid">
         {PALETTE_COLORS.map((hexColor) => {
           const isSelected = selectedHex.toLowerCase() === hexColor.toLowerCase();
@@ -59,6 +57,6 @@ export function PalettePanel() {
           className="color-input"
         />
       </div>
-    </section>
+    </DockPanel>
   );
 }

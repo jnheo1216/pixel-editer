@@ -81,6 +81,7 @@ export interface UIState {
   selectedColor: number;
   brushSize: number;
   hitboxInsetPercent: number;
+  compactPanelsEnabled: boolean;
   viewport: ViewportState;
 }
 

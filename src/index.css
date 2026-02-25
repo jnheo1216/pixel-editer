@@ -125,17 +125,33 @@ code {
     margin: 0 auto;
     padding: 0.85rem 1rem 1.2rem;
     flex: 1;
+    position: relative;
+    isolation: isolate;
+  }
+
+  .app-main--compact-panels {
+    grid-template-columns: 96px minmax(0, 1fr) 108px;
   }
 
   .workspace-column {
     min-width: 0;
+    position: relative;
+    z-index: 6;
   }
 
   .panel-stack {
     @apply space-y-4;
   }
 
+  .panel-stack--compact {
+    @apply space-y-2;
+  }
+
   .panel-stack > .panel {
+    animation: panel-rise 360ms steps(8, end) both;
+  }
+
+  .panel-stack--compact > .dock-panel {
     animation: panel-rise 360ms steps(8, end) both;
   }
 
@@ -152,6 +168,22 @@ code {
   }
 
   .panel-stack > .panel:nth-child(4) {
+    animation-delay: 240ms;
+  }
+
+  .panel-stack--compact > .dock-panel:nth-child(1) {
+    animation-delay: 70ms;
+  }
+
+  .panel-stack--compact > .dock-panel:nth-child(2) {
+    animation-delay: 130ms;
+  }
+
+  .panel-stack--compact > .dock-panel:nth-child(3) {
+    animation-delay: 190ms;
+  }
+
+  .panel-stack--compact > .dock-panel:nth-child(4) {
     animation-delay: 240ms;
   }
 
@@ -232,7 +264,15 @@ code {
     box-shadow: 1px 1px 0 rgb(47 53 80 / 45%);
   }
 
+  .toolbar-button[aria-pressed='true'] {
+    border-color: var(--line-strong);
+    background: linear-gradient(160deg, #32d6d8 0%, #1f93cc 100%);
+    color: #f7feff;
+    text-shadow: 1px 1px 0 rgb(47 53 80 / 40%);
+  }
+
   .toolbar-button:focus-visible,
+  .dock-panel__trigger:focus-visible,
   .tool-button:focus-visible,
   .primary-button:focus-visible,
   .layer-icon-button:focus-visible,
@@ -282,6 +322,72 @@ code {
     border: 1px dashed rgb(34 42 63 / 20%);
     border-radius: 0.42rem;
     pointer-events: none;
+  }
+
+  .dock-panel {
+    position: relative;
+    z-index: 2;
+  }
+
+  .dock-panel--expanded {
+    z-index: 30;
+  }
+
+  .dock-panel__trigger {
+    width: 100%;
+    border: 2px solid var(--line-strong);
+    border-radius: var(--radius-block);
+    background: linear-gradient(150deg, #fff6dc 0%, #f1e0b0 100%);
+    box-shadow: 3px 3px 0 rgb(47 53 80 / 42%);
+    padding: 0.5rem 0.45rem;
+    display: grid;
+    gap: 0.14rem;
+    text-align: left;
+    transition: transform 130ms ease, border-color 130ms ease;
+  }
+
+  .dock-panel__trigger:hover {
+    border-color: var(--accent-cyan);
+    transform: translateY(-1px);
+  }
+
+  .dock-panel--expanded .dock-panel__trigger {
+    border-color: var(--accent-cyan);
+    box-shadow: 2px 2px 0 rgb(47 53 80 / 42%);
+  }
+
+  .dock-panel__title {
+    font-family: var(--font-display);
+    font-size: 0.46rem;
+    letter-spacing: 0.04em;
+    line-height: 1.34;
+    color: var(--line-strong);
+  }
+
+  .dock-panel__summary {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: var(--ink-700);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dock-panel__popover {
+    position: absolute;
+    top: 0;
+    z-index: 35;
+    width: min(340px, calc(100vw - 2.4rem));
+    margin: 0;
+  }
+
+  .dock-panel__popover--left {
+    left: calc(100% + 0.55rem);
+  }
+
+  .dock-panel__popover--right {
+    right: calc(100% + 0.55rem);
   }
 
   .panel-title {
@@ -494,6 +600,8 @@ code {
   .workspace-canvas {
     min-width: 0;
     min-height: 560px;
+    position: relative;
+    z-index: 1;
   }
 
   .canvas-stage {
@@ -604,6 +712,11 @@ code {
       grid-template-columns: 250px minmax(0, 1fr) 312px;
       max-width: 1500px;
     }
+
+    .app-main--compact-panels {
+      grid-template-columns: 86px minmax(0, 1fr) 96px;
+      max-width: 1500px;
+    }
   }
 
   @media (max-width: 1160px) {
@@ -613,6 +726,14 @@ code {
 
     .workspace-column--left {
       grid-column: 1 / -1;
+    }
+
+    .app-main--compact-panels {
+      grid-template-columns: 78px minmax(0, 1fr) 88px;
+    }
+
+    .app-main--compact-panels .workspace-column--left {
+      grid-column: auto;
     }
   }
 
@@ -628,6 +749,22 @@ code {
 
     .panel-stack {
       @apply space-y-3;
+    }
+
+    .app-main--compact-panels {
+      grid-template-columns: 1fr;
+    }
+
+    .app-main--compact-panels .dock-panel__popover {
+      position: static;
+      width: 100%;
+      margin-top: 0.55rem;
+    }
+
+    .app-main--compact-panels .dock-panel__popover--left,
+    .app-main--compact-panels .dock-panel__popover--right {
+      left: auto;
+      right: auto;
     }
 
     .app-brand__title {

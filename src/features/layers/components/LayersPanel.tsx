@@ -15,6 +15,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import type { CSSProperties } from 'react';
 
+import { DockPanel } from '../../../app/layout/DockPanel';
 import type { LayerModel } from '../../../core/model/types';
 import { useEditorStore } from '../../../state/editorStore';
 import { LayerPreview } from './LayerPreview';
@@ -109,6 +110,7 @@ function SortableLayerItem({
 
 export function LayersPanel() {
   const pixelDocument = useEditorStore((state) => state.document);
+  const compactPanelsEnabled = useEditorStore((state) => state.ui.compactPanelsEnabled);
   const addLayer = useEditorStore((state) => state.addLayer);
   const deleteLayer = useEditorStore((state) => state.deleteLayer);
   const selectLayer = useEditorStore((state) => state.selectLayer);
@@ -125,6 +127,8 @@ export function LayersPanel() {
 
   const displayLayers = [...pixelDocument.layers].reverse();
   const displayIds = displayLayers.map((layer) => layer.id);
+  const activeLayer = pixelDocument.layers.find((layer) => layer.id === pixelDocument.activeLayerId);
+  const panelSummary = `${pixelDocument.layers.length}개 · ${activeLayer?.name ?? '레이어 없음'}`;
 
   const handleDragEnd = (event: DragEndEvent): void => {
     const { active, over } = event;
@@ -146,12 +150,14 @@ export function LayersPanel() {
   };
 
   return (
-    <section className="panel flex h-full flex-col">
-      <div className="mb-3 flex items-start justify-between gap-2">
-        <div>
-          <h2 className="panel-title">레이어</h2>
-          <p className="panel-kicker">Layer Stack</p>
-        </div>
+    <DockPanel
+      title="레이어"
+      kicker="Layer Stack"
+      summary={panelSummary}
+      side="right"
+      panelClassName={compactPanelsEnabled ? 'flex flex-col' : 'flex h-full flex-col'}
+    >
+      <div className="mb-3 flex items-center justify-end">
         <button
           type="button"
           onClick={addLayer}
@@ -187,6 +193,6 @@ export function LayersPanel() {
       <p className="panel-note">
         위쪽이 앞 레이어입니다. 드래그 핸들로 순서를 변경하세요.
       </p>
-    </section>
+    </DockPanel>
   );
 }

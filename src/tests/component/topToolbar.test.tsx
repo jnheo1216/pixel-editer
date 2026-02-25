@@ -49,4 +49,18 @@ describe('TopToolbar undo/redo', () => {
     expect(alertSpy).toHaveBeenCalled();
     alertSpy.mockRestore();
   });
+
+  it('toggles compact panel mode from the toolbar', () => {
+    render(<TopToolbar />);
+
+    const toggleButton = screen.getByRole('button', { name: '패널 미니 모드' });
+    expect(toggleButton).toHaveAttribute('aria-pressed', 'false');
+
+    act(() => {
+      fireEvent.click(toggleButton);
+    });
+
+    expect(useEditorStore.getState().ui.compactPanelsEnabled).toBe(true);
+    expect(toggleButton).toHaveAttribute('aria-pressed', 'true');
+  });
 });

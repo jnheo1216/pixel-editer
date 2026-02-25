@@ -17,6 +17,8 @@ export function AppShell() {
 
   const pixelDocument = useEditorStore((state) => state.document);
   const replaceDocument = useEditorStore((state) => state.replaceDocument);
+  const compactPanelsEnabled = useEditorStore((state) => state.ui.compactPanelsEnabled);
+  const panelModeKey = compactPanelsEnabled ? 'compact' : 'full';
 
   const [recoveryProject, setRecoveryProject] = useState<ProjectFileV1 | null>(() => loadAutosave());
 
@@ -68,12 +70,12 @@ export function AppShell() {
         </div>
       )}
 
-      <main className="app-main">
+      <main className={compactPanelsEnabled ? 'app-main app-main--compact-panels' : 'app-main'}>
         <aside className="workspace-column workspace-column--left">
-          <div className="panel-stack">
-            <ToolPanel />
-            <PalettePanel />
-            <SettingsPanel />
+          <div className={compactPanelsEnabled ? 'panel-stack panel-stack--compact' : 'panel-stack'}>
+            <ToolPanel key={`tool-${panelModeKey}`} />
+            <PalettePanel key={`palette-${panelModeKey}`} />
+            <SettingsPanel key={`settings-${panelModeKey}`} />
           </div>
         </aside>
 
@@ -82,8 +84,8 @@ export function AppShell() {
         </section>
 
         <aside className="workspace-column workspace-column--right">
-          <div className="panel-stack">
-            <LayersPanel />
+          <div className={compactPanelsEnabled ? 'panel-stack panel-stack--compact' : 'panel-stack'}>
+            <LayersPanel key={`layers-${panelModeKey}`} />
           </div>
         </aside>
       </main>

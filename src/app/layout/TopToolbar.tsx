@@ -13,9 +13,11 @@ export function TopToolbar() {
   const pixelDocument = useEditorStore((state) => state.document);
   const history = useEditorStore((state) => state.history);
   const viewport = useEditorStore((state) => state.ui.viewport);
+  const compactPanelsEnabled = useEditorStore((state) => state.ui.compactPanelsEnabled);
   const undo = useEditorStore((state) => state.undo);
   const redo = useEditorStore((state) => state.redo);
   const replaceDocument = useEditorStore((state) => state.replaceDocument);
+  const setCompactPanelsEnabled = useEditorStore((state) => state.setCompactPanelsEnabled);
   const setViewport = useEditorStore((state) => state.setViewport);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -123,6 +125,18 @@ export function TopToolbar() {
               className="toolbar-button"
             >
               뷰 리셋
+            </button>
+          </div>
+
+          <div className="toolbar-group">
+            <button
+              type="button"
+              onClick={() => setCompactPanelsEnabled(!compactPanelsEnabled)}
+              className="toolbar-button"
+              aria-pressed={compactPanelsEnabled}
+              title="패널 미니 모드"
+            >
+              패널 미니 모드
             </button>
           </div>
 
