@@ -29,8 +29,9 @@ export function PalettePanel() {
   return (
     <section className="panel">
       <h2 className="panel-title">팔레트</h2>
+      <p className="panel-kicker">Color Deck</p>
 
-      <div className="grid grid-cols-8 gap-2">
+      <div className="palette-grid">
         {PALETTE_COLORS.map((hexColor) => {
           const isSelected = selectedHex.toLowerCase() === hexColor.toLowerCase();
 
@@ -47,17 +48,16 @@ export function PalettePanel() {
         })}
       </div>
 
-      <div className="mt-4 flex items-center gap-2">
+      <div className="palette-current">
+        <span className="palette-current-swatch" style={{ backgroundColor: selectedHex }} />
+        <code className="color-code">{selectedHex.toUpperCase()}</code>
         <input
           aria-label="사용자 정의 색상"
           type="color"
           value={selectedHex}
           onChange={(event) => setSelectedColorHex(event.target.value)}
-          className="h-10 w-12 cursor-pointer rounded border border-slate-300 bg-white"
+          className="color-input"
         />
-        <code className="rounded bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
-          {selectedHex.toUpperCase()}
-        </code>
       </div>
     </section>
   );

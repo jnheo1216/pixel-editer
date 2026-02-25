@@ -10,7 +10,9 @@ export function ToolPanel() {
   return (
     <section className="panel">
       <h2 className="panel-title">도구</h2>
-      <div className="grid grid-cols-2 gap-2">
+      <p className="panel-kicker">Stroke Control</p>
+
+      <div className="tool-grid">
         {TOOL_DEFINITIONS.map((tool) => (
           <button
             key={tool.id}
@@ -23,8 +25,8 @@ export function ToolPanel() {
         ))}
       </div>
 
-      <div className="mt-4 space-y-2">
-        <label htmlFor="brush-size" className="text-sm font-semibold text-slate-700">
+      <div className="mt-4">
+        <label htmlFor="brush-size" className="field-label">
           브러시 크기: {brushSize}px
         </label>
         <input
@@ -35,7 +37,7 @@ export function ToolPanel() {
           step={1}
           value={brushSize}
           onChange={(event) => setBrushSize(Number(event.target.value))}
-          className="w-full accent-teal-600"
+          className="pixel-range"
         />
       </div>
     </section>

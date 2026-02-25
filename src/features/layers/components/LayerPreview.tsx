@@ -28,9 +28,9 @@ export function LayerPreview({ layer, width, height }: LayerPreviewProps) {
 
     context.clearRect(0, 0, 48, 48);
 
-    context.fillStyle = '#f1f5f9';
+    context.fillStyle = '#f8efcf';
     context.fillRect(0, 0, 48, 48);
-    context.fillStyle = '#e2e8f0';
+    context.fillStyle = '#e9dba9';
 
     for (let y = 0; y < 6; y += 1) {
       for (let x = 0; x < 6; x += 1) {
@@ -55,10 +55,10 @@ export function LayerPreview({ layer, width, height }: LayerPreviewProps) {
     context.drawImage(stagingCanvas, 0, 0, 48, 48);
 
     if (!layer.visible) {
-      context.fillStyle = 'rgba(15, 23, 42, 0.45)';
+      context.fillStyle = 'rgba(27, 35, 51, 0.42)';
       context.fillRect(0, 0, 48, 48);
     }
   }, [layer, width, height]);
 
-  return <canvas ref={canvasRef} className="h-12 w-12 rounded border border-slate-300" />;
+  return <canvas ref={canvasRef} className="layer-preview-canvas" />;
 }

@@ -67,80 +67,80 @@ export function TopToolbar() {
   };
 
   return (
-    <header className="border-b border-slate-300/90 bg-white/90 px-4 py-3 backdrop-blur">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <h1 className="text-base font-bold tracking-tight text-slate-900">Pixel Editer</h1>
-          <span className="rounded-full bg-teal-100 px-2 py-0.5 text-xs font-semibold text-teal-900">
-            v1
-          </span>
+    <header className="app-toolbar">
+      <div className="app-toolbar__inner">
+        <div className="app-brand">
+          <h1 className="app-brand__title">Pixel Editer</h1>
+          <span className="app-chip">v1</span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={undo}
-            disabled={history.undoStack.length === 0}
-            className="toolbar-button"
-          >
-            실행 취소
-          </button>
-          <button
-            type="button"
-            onClick={redo}
-            disabled={history.redoStack.length === 0}
-            className="toolbar-button"
-          >
-            다시 실행
-          </button>
+        <div className="app-toolbar__actions">
+          <div className="toolbar-group">
+            <button
+              type="button"
+              onClick={undo}
+              disabled={history.undoStack.length === 0}
+              className="toolbar-button"
+            >
+              실행 취소
+            </button>
+            <button
+              type="button"
+              onClick={redo}
+              disabled={history.redoStack.length === 0}
+              className="toolbar-button"
+            >
+              다시 실행
+            </button>
+          </div>
 
-          <div className="h-6 w-px bg-slate-300" />
+          <div className="toolbar-group">
+            <button
+              type="button"
+              onClick={() =>
+                setViewport({
+                  zoom: viewport.zoom * 1.15,
+                })
+              }
+              className="toolbar-button"
+            >
+              확대
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setViewport({
+                  zoom: viewport.zoom / 1.15,
+                })
+              }
+              className="toolbar-button"
+            >
+              축소
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewport({ zoom: 1, panX: 0, panY: 0 })}
+              className="toolbar-button"
+            >
+              뷰 리셋
+            </button>
+          </div>
 
-          <button
-            type="button"
-            onClick={() =>
-              setViewport({
-                zoom: viewport.zoom * 1.15,
-              })
-            }
-            className="toolbar-button"
-          >
-            확대
-          </button>
-          <button
-            type="button"
-            onClick={() =>
-              setViewport({
-                zoom: viewport.zoom / 1.15,
-              })
-            }
-            className="toolbar-button"
-          >
-            축소
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewport({ zoom: 1, panX: 0, panY: 0 })}
-            className="toolbar-button"
-          >
-            뷰 리셋
-          </button>
-
-          <div className="h-6 w-px bg-slate-300" />
-
-          <button type="button" onClick={handleExportPng} className="toolbar-button">
-            PNG 다운로드
-          </button>
-          <button type="button" onClick={handleExportJson} className="toolbar-button">
-            JSON 저장
-          </button>
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            className="toolbar-button"
-          >
-            JSON 불러오기
-          </button>
+          <div className="toolbar-group">
+            <button type="button" onClick={handleExportPng} className="toolbar-button">
+              PNG 다운로드
+            </button>
+            <button type="button" onClick={handleExportJson} className="toolbar-button">
+              JSON 저장
+            </button>
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="toolbar-button"
+            >
+              JSON 불러오기
+            </button>
+          </div>
           <input
             ref={inputRef}
             type="file"

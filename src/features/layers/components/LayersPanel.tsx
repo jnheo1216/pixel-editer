@@ -147,8 +147,11 @@ export function LayersPanel() {
 
   return (
     <section className="panel flex h-full flex-col">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <h2 className="panel-title">레이어</h2>
+      <div className="mb-3 flex items-start justify-between gap-2">
+        <div>
+          <h2 className="panel-title">레이어</h2>
+          <p className="panel-kicker">Layer Stack</p>
+        </div>
         <button
           type="button"
           onClick={addLayer}
@@ -159,7 +162,7 @@ export function LayersPanel() {
         </button>
       </div>
 
-      <div className="rounded-lg border border-slate-200 bg-slate-50 p-2">
+      <div className="layer-list-shell">
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={displayIds} strategy={rectSortingStrategy}>
             <ol className="space-y-2">
@@ -181,7 +184,7 @@ export function LayersPanel() {
         </DndContext>
       </div>
 
-      <p className="mt-3 text-xs text-slate-600">
+      <p className="panel-note">
         위쪽이 앞 레이어입니다. 드래그 핸들로 순서를 변경하세요.
       </p>
     </section>

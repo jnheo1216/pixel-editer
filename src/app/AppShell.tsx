@@ -49,14 +49,14 @@ export function AppShell() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[linear-gradient(145deg,#ecfeff_0%,#f8fafc_35%,#e2e8f0_100%)] text-slate-900">
+    <div className="app-shell">
       <TopToolbar />
 
       {recoveryProject && (
-        <div className="border-b border-amber-300 bg-amber-100 px-4 py-2 text-sm text-amber-900">
-          <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-2">
+        <div className="status-banner">
+          <div className="status-banner__inner">
             <p>이전에 자동 저장된 작업을 찾았습니다. 복구하시겠어요?</p>
-            <div className="flex items-center gap-2">
+            <div className="status-banner__actions">
               <button type="button" onClick={handleRestoreAutosave} className="toolbar-button">
                 복구
               </button>
@@ -68,19 +68,23 @@ export function AppShell() {
         </div>
       )}
 
-      <main className="mx-auto flex w-full max-w-[1600px] flex-1 gap-3 p-3 max-lg:flex-col">
-        <aside className="w-[280px] space-y-3 max-lg:w-full">
-          <ToolPanel />
-          <PalettePanel />
-          <SettingsPanel />
+      <main className="app-main">
+        <aside className="workspace-column workspace-column--left">
+          <div className="panel-stack">
+            <ToolPanel />
+            <PalettePanel />
+            <SettingsPanel />
+          </div>
         </aside>
 
-        <section className="min-h-[520px] min-w-0 flex-1">
+        <section className="workspace-canvas">
           <CanvasViewport />
         </section>
 
-        <aside className="w-[340px] max-lg:w-full">
-          <LayersPanel />
+        <aside className="workspace-column workspace-column--right">
+          <div className="panel-stack">
+            <LayersPanel />
+          </div>
         </aside>
       </main>
     </div>

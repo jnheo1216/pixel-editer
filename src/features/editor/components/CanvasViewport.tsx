@@ -379,11 +379,17 @@ export function CanvasViewport() {
   };
 
   return (
-    <section className="relative h-full overflow-hidden rounded-xl border border-slate-300 bg-[radial-gradient(circle_at_30%_20%,#ffffff_0%,#e2e8f0_45%,#cbd5e1_100%)] shadow-inner">
+    <section className="canvas-stage">
+      <div className="canvas-hud">
+        <span>ZOOM</span>
+        <code>{viewport.zoom.toFixed(2)}x</code>
+        <span>GRID</span>
+        <code>{pixelDocument.width}x{pixelDocument.height}</code>
+      </div>
       <div
         ref={containerRef}
         data-testid="canvas-surface"
-        className="relative h-full w-full touch-none"
+        className="canvas-surface"
         style={{ cursor: toolCursor }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}

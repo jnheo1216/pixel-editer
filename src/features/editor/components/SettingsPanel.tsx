@@ -37,9 +37,10 @@ export function SettingsPanel() {
   return (
     <section className="panel">
       <h2 className="panel-title">설정</h2>
-      <p className="mb-3 text-xs text-slate-600">캔버스 범위: 1~256, 픽셀 크기: 4~40</p>
+      <p className="panel-kicker">Canvas Rules</p>
+      <p className="panel-note">캔버스 범위: 1~256, 픽셀 크기: 4~40</p>
 
-      <div key={formKey} className="space-y-2">
+      <div key={formKey} className="mt-3 space-y-2">
         <label className="settings-row">
           <span>가로</span>
           <input
@@ -78,7 +79,7 @@ export function SettingsPanel() {
 
       </div>
 
-      <label htmlFor="hitbox-inset" className="mt-3 block text-sm font-semibold text-slate-700">
+      <label htmlFor="hitbox-inset" className="field-label mt-4">
         픽셀 인식 여백: {hitboxInsetPercent}%
       </label>
       <input
@@ -89,9 +90,9 @@ export function SettingsPanel() {
         step={1}
         value={hitboxInsetPercent}
         onChange={(event) => setHitboxInsetPercent(Number(event.target.value))}
-        className="w-full accent-teal-600"
+        className="pixel-range"
       />
-      <p className="mt-1 text-xs text-slate-500">
+      <p className="settings-helper">
         값이 클수록 픽셀 중심에 가까운 클릭만 인식합니다.
       </p>
 
