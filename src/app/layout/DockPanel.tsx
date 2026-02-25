@@ -8,6 +8,7 @@ interface DockPanelProps {
   summary: string;
   side?: 'left' | 'right';
   panelClassName?: string;
+  forceExpanded?: boolean;
   children: ReactNode;
 }
 
@@ -21,16 +22,18 @@ export function DockPanel({
   summary,
   side = 'left',
   panelClassName,
+  forceExpanded = false,
   children,
 }: DockPanelProps) {
   const compactPanelsEnabled = useEditorStore((state) => state.ui.compactPanelsEnabled);
+  const isCompactMode = compactPanelsEnabled && !forceExpanded;
   const [isExpanded, setIsExpanded] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const headingId = useId();
   const panelId = useId();
 
   useEffect(() => {
-    if (!compactPanelsEnabled || !isExpanded) {
+    if (!isCompactMode || !isExpanded) {
       return;
     }
 
@@ -64,11 +67,11 @@ export function DockPanel({
       window.removeEventListener('touchstart', handlePointerDown);
       window.removeEventListener('keydown', handleEscape);
     };
-  }, [compactPanelsEnabled, isExpanded]);
+  }, [isCompactMode, isExpanded]);
 
   const basePanelClassName = buildPanelClassName(panelClassName);
 
-  if (!compactPanelsEnabled) {
+  if (!isCompactMode) {
     return (
       <section className={basePanelClassName}>
         <h2 id={headingId} className="panel-title">

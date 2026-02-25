@@ -2,7 +2,11 @@ import { DockPanel } from '../../../app/layout/DockPanel';
 import { TOOL_DEFINITIONS } from '../../../core/tools/toolRegistry';
 import { useEditorStore } from '../../../state/editorStore';
 
-export function ToolPanel() {
+interface ToolPanelProps {
+  forceExpanded?: boolean;
+}
+
+export function ToolPanel({ forceExpanded = false }: ToolPanelProps) {
   const activeTool = useEditorStore((state) => state.ui.activeTool);
   const brushSize = useEditorStore((state) => state.ui.brushSize);
   const setActiveTool = useEditorStore((state) => state.setActiveTool);
@@ -11,7 +15,12 @@ export function ToolPanel() {
   const panelSummary = `${activeToolLabel} · ${brushSize}px`;
 
   return (
-    <DockPanel title="도구" kicker="Stroke Control" summary={panelSummary}>
+    <DockPanel
+      title="도구"
+      kicker="Stroke Control"
+      summary={panelSummary}
+      forceExpanded={forceExpanded}
+    >
       <div className="tool-grid">
         {TOOL_DEFINITIONS.map((tool) => (
           <button

@@ -21,14 +21,23 @@ const PALETTE_COLORS = [
   '#7c2d12',
 ];
 
-export function PalettePanel() {
+interface PalettePanelProps {
+  forceExpanded?: boolean;
+}
+
+export function PalettePanel({ forceExpanded = false }: PalettePanelProps) {
   const selectedColor = useEditorStore((state) => state.ui.selectedColor);
   const setSelectedColorHex = useEditorStore((state) => state.setSelectedColorHex);
 
   const selectedHex = rgbaUintToHex(selectedColor);
 
   return (
-    <DockPanel title="팔레트" kicker="Color Deck" summary={selectedHex.toUpperCase()}>
+    <DockPanel
+      title="팔레트"
+      kicker="Color Deck"
+      summary={selectedHex.toUpperCase()}
+      forceExpanded={forceExpanded}
+    >
       <div className="palette-grid">
         {PALETTE_COLORS.map((hexColor) => {
           const isSelected = selectedHex.toLowerCase() === hexColor.toLowerCase();

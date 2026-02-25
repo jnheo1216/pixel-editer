@@ -128,7 +128,7 @@ export function TopToolbar() {
             </button>
           </div>
 
-          <div className="toolbar-group">
+          <div className="toolbar-group toolbar-group--desktop-only">
             <button
               type="button"
               onClick={() => setCompactPanelsEnabled(!compactPanelsEnabled)}

@@ -3,7 +3,11 @@ import { useMemo, useRef } from 'react';
 import { DockPanel } from '../../../app/layout/DockPanel';
 import { useEditorStore } from '../../../state/editorStore';
 
-export function SettingsPanel() {
+interface SettingsPanelProps {
+  forceExpanded?: boolean;
+}
+
+export function SettingsPanel({ forceExpanded = false }: SettingsPanelProps) {
   const pixelDocument = useEditorStore((state) => state.document);
   const hitboxInsetPercent = useEditorStore((state) => state.ui.hitboxInsetPercent);
   const applySettings = useEditorStore((state) => state.applySettings);
@@ -37,7 +41,12 @@ export function SettingsPanel() {
   };
 
   return (
-    <DockPanel title="설정" kicker="Canvas Rules" summary={panelSummary}>
+    <DockPanel
+      title="설정"
+      kicker="Canvas Rules"
+      summary={panelSummary}
+      forceExpanded={forceExpanded}
+    >
       <p className="panel-note">캔버스 범위: 1~256, 픽셀 크기: 4~40</p>
 
       <div key={formKey} className="mt-3 space-y-2">

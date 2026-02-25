@@ -31,6 +31,10 @@ interface SortableLayerItemProps {
   disableDelete: boolean;
 }
 
+interface LayersPanelProps {
+  forceExpanded?: boolean;
+}
+
 function SortableLayerItem({
   layer,
   documentWidth,
@@ -108,7 +112,7 @@ function SortableLayerItem({
   );
 }
 
-export function LayersPanel() {
+export function LayersPanel({ forceExpanded = false }: LayersPanelProps) {
   const pixelDocument = useEditorStore((state) => state.document);
   const compactPanelsEnabled = useEditorStore((state) => state.ui.compactPanelsEnabled);
   const addLayer = useEditorStore((state) => state.addLayer);
@@ -129,6 +133,7 @@ export function LayersPanel() {
   const displayIds = displayLayers.map((layer) => layer.id);
   const activeLayer = pixelDocument.layers.find((layer) => layer.id === pixelDocument.activeLayerId);
   const panelSummary = `${pixelDocument.layers.length}개 · ${activeLayer?.name ?? '레이어 없음'}`;
+  const useCompactLayout = compactPanelsEnabled && !forceExpanded;
 
   const handleDragEnd = (event: DragEndEvent): void => {
     const { active, over } = event;
@@ -155,7 +160,8 @@ export function LayersPanel() {
       kicker="Layer Stack"
       summary={panelSummary}
       side="right"
-      panelClassName={compactPanelsEnabled ? 'flex flex-col' : 'flex h-full flex-col'}
+      forceExpanded={forceExpanded}
+      panelClassName={useCompactLayout ? 'flex flex-col' : 'flex h-full flex-col'}
     >
       <div className="mb-3 flex items-center justify-end">
         <button

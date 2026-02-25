@@ -11,6 +11,17 @@ import { PalettePanel } from '../features/editor/components/PalettePanel';
 import { SettingsPanel } from '../features/editor/components/SettingsPanel';
 import { ToolPanel } from '../features/editor/components/ToolPanel';
 import { LayersPanel } from '../features/layers/components/LayersPanel';
+import { MobilePanelDock } from './layout/MobilePanelDock';
+
+const MOBILE_BREAKPOINT_PX = 880;
+
+function getIsMobileLayout(): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  return window.innerWidth <= MOBILE_BREAKPOINT_PX;
+}
 
 export function AppShell() {
   useKeyboardShortcuts();
@@ -21,6 +32,16 @@ export function AppShell() {
   const panelModeKey = compactPanelsEnabled ? 'compact' : 'full';
 
   const [recoveryProject, setRecoveryProject] = useState<ProjectFileV1 | null>(() => loadAutosave());
+  const [isMobileLayout, setIsMobileLayout] = useState<boolean>(() => getIsMobileLayout());
+
+  useEffect(() => {
+    const handleResize = (): void => {
+      setIsMobileLayout(getIsMobileLayout());
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (recoveryProject) {
@@ -70,25 +91,34 @@ export function AppShell() {
         </div>
       )}
 
-      <main className={compactPanelsEnabled ? 'app-main app-main--compact-panels' : 'app-main'}>
-        <aside className="workspace-column workspace-column--left">
-          <div className={compactPanelsEnabled ? 'panel-stack panel-stack--compact' : 'panel-stack'}>
-            <ToolPanel key={`tool-${panelModeKey}`} />
-            <PalettePanel key={`palette-${panelModeKey}`} />
-            <SettingsPanel key={`settings-${panelModeKey}`} />
-          </div>
-        </aside>
+      {isMobileLayout ? (
+        <main className="app-main app-main--mobile">
+          <section className="workspace-canvas">
+            <CanvasViewport />
+          </section>
+          <MobilePanelDock />
+        </main>
+      ) : (
+        <main className={compactPanelsEnabled ? 'app-main app-main--compact-panels' : 'app-main'}>
+          <aside className="workspace-column workspace-column--left">
+            <div className={compactPanelsEnabled ? 'panel-stack panel-stack--compact' : 'panel-stack'}>
+              <ToolPanel key={`tool-${panelModeKey}`} />
+              <PalettePanel key={`palette-${panelModeKey}`} />
+              <SettingsPanel key={`settings-${panelModeKey}`} />
+            </div>
+          </aside>
 
-        <section className="workspace-canvas">
-          <CanvasViewport />
-        </section>
+          <section className="workspace-canvas">
+            <CanvasViewport />
+          </section>
 
-        <aside className="workspace-column workspace-column--right">
-          <div className={compactPanelsEnabled ? 'panel-stack panel-stack--compact' : 'panel-stack'}>
-            <LayersPanel key={`layers-${panelModeKey}`} />
-          </div>
-        </aside>
-      </main>
+          <aside className="workspace-column workspace-column--right">
+            <div className={compactPanelsEnabled ? 'panel-stack panel-stack--compact' : 'panel-stack'}>
+              <LayersPanel key={`layers-${panelModeKey}`} />
+            </div>
+          </aside>
+        </main>
+      )}
     </div>
   );
 }

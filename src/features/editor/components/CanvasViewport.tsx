@@ -31,6 +31,33 @@ interface Geometry {
 }
 
 const PIXEL_HIT_DISABLE_CELL_SIZE = 8;
+const MIN_ZOOM = 0.25;
+const MAX_ZOOM = 24;
+
+interface TouchPoint {
+  x: number;
+  y: number;
+}
+
+interface TouchGestureState {
+  initialDistance: number;
+  initialCenterX: number;
+  initialCenterY: number;
+  initialZoom: number;
+  initialPanX: number;
+  initialPanY: number;
+}
+
+function calculateDistance(first: TouchPoint, second: TouchPoint): number {
+  return Math.hypot(second.x - first.x, second.y - first.y);
+}
+
+function calculateCenter(first: TouchPoint, second: TouchPoint): TouchPoint {
+  return {
+    x: (first.x + second.x) / 2,
+    y: (first.y + second.y) / 2,
+  };
+}
 
 function getGeometry(
   container: HTMLElement,
@@ -132,11 +159,18 @@ export function CanvasViewport() {
   const drawingRef = useRef(false);
   const panningRef = useRef(false);
   const panPointerRef = useRef<{ x: number; y: number } | null>(null);
+  const touchPointsRef = useRef<Map<number, TouchPoint>>(new Map());
+  const touchGestureRef = useRef<TouchGestureState | null>(null);
 
   const [hoverPoint, setHoverPoint] = useState<PixelPoint | null>(null);
   const [containerVersion, setContainerVersion] = useState(0);
 
   const toolCursor = useMemo(() => getToolDefinition(activeTool).cursor, [activeTool]);
+
+  const resetTouchGesture = (): void => {
+    touchPointsRef.current.clear();
+    touchGestureRef.current = null;
+  };
 
   useEffect(() => {
     const container = containerRef.current;
@@ -246,6 +280,58 @@ export function CanvasViewport() {
       return;
     }
 
+    const activeLayerExists = getLayerIndexById(pixelDocument, pixelDocument.activeLayerId) >= 0;
+    if (!activeLayerExists) {
+      return;
+    }
+
+    if (event.pointerType === 'touch') {
+      event.currentTarget.setPointerCapture(event.pointerId);
+      touchPointsRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+      if (touchPointsRef.current.size === 2) {
+        if (drawingRef.current) {
+          endStroke();
+          drawingRef.current = false;
+        }
+
+        const [firstTouch, secondTouch] = Array.from(touchPointsRef.current.values());
+        const center = calculateCenter(firstTouch, secondTouch);
+        touchGestureRef.current = {
+          initialDistance: Math.max(calculateDistance(firstTouch, secondTouch), 1),
+          initialCenterX: center.x,
+          initialCenterY: center.y,
+          initialZoom: viewport.zoom,
+          initialPanX: viewport.panX,
+          initialPanY: viewport.panY,
+        };
+        setHoverPoint(null);
+        return;
+      }
+
+      if (touchPointsRef.current.size > 2) {
+        return;
+      }
+
+      const geometry = getGeometry(container, pixelDocument, viewport);
+      const point = toPixelPoint(
+        event.clientX,
+        event.clientY,
+        container,
+        geometry,
+        hitboxInsetPercent,
+      );
+
+      if (!point || !isPointInBounds(point, pixelDocument)) {
+        return;
+      }
+
+      drawingRef.current = true;
+      startStroke(point);
+      setHoverPoint(point);
+      return;
+    }
+
     if (event.button === 1) {
       panningRef.current = true;
       panPointerRef.current = { x: event.clientX, y: event.clientY };
@@ -270,11 +356,6 @@ export function CanvasViewport() {
       return;
     }
 
-    const activeLayerExists = getLayerIndexById(pixelDocument, pixelDocument.activeLayerId) >= 0;
-    if (!activeLayerExists) {
-      return;
-    }
-
     drawingRef.current = true;
     event.currentTarget.setPointerCapture(event.pointerId);
     startStroke(point);
@@ -287,11 +368,41 @@ export function CanvasViewport() {
       return;
     }
 
+    if (event.pointerType === 'touch') {
+      if (touchPointsRef.current.has(event.pointerId)) {
+        touchPointsRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      }
+
+      if (touchPointsRef.current.size >= 2 && touchGestureRef.current) {
+        const [firstTouch, secondTouch] = Array.from(touchPointsRef.current.values());
+        const center = calculateCenter(firstTouch, secondTouch);
+        const distance = Math.max(calculateDistance(firstTouch, secondTouch), 1);
+        const scale = distance / touchGestureRef.current.initialDistance;
+        const nextZoom = clamp(
+          touchGestureRef.current.initialZoom * scale,
+          MIN_ZOOM,
+          MAX_ZOOM,
+        );
+
+        setViewport({
+          zoom: nextZoom,
+          panX: touchGestureRef.current.initialPanX + (center.x - touchGestureRef.current.initialCenterX),
+          panY: touchGestureRef.current.initialPanY + (center.y - touchGestureRef.current.initialCenterY),
+        });
+        setHoverPoint(null);
+        return;
+      }
+    }
+
     if (panningRef.current && panPointerRef.current) {
       const deltaX = event.clientX - panPointerRef.current.x;
       const deltaY = event.clientY - panPointerRef.current.y;
       panViewport(deltaX, deltaY);
       panPointerRef.current = { x: event.clientX, y: event.clientY };
+      return;
+    }
+
+    if (event.pointerType === 'touch' && touchPointsRef.current.size > 1) {
       return;
     }
 
@@ -322,6 +433,23 @@ export function CanvasViewport() {
   };
 
   const handlePointerUp = (event: ReactPointerEvent<HTMLDivElement>): void => {
+    if (event.pointerType === 'touch') {
+      touchPointsRef.current.delete(event.pointerId);
+      if (touchPointsRef.current.size < 2) {
+        touchGestureRef.current = null;
+      }
+
+      if (drawingRef.current && touchPointsRef.current.size === 0) {
+        endStroke();
+        drawingRef.current = false;
+      }
+
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+      return;
+    }
+
     finishPointer();
 
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
@@ -334,6 +462,8 @@ export function CanvasViewport() {
     drawingRef.current = false;
     panningRef.current = false;
     panPointerRef.current = null;
+    setHoverPoint(null);
+    resetTouchGesture();
   };
 
   const handleWheel = (event: ReactWheelEvent<HTMLDivElement>): void => {
@@ -355,8 +485,8 @@ export function CanvasViewport() {
 
       const nextZoom = clamp(
         viewport.zoom * (event.deltaY < 0 ? 1.1 : 0.9),
-        0.25,
-        24,
+        MIN_ZOOM,
+        MAX_ZOOM,
       );
 
       const nextCellSize = pixelDocument.pixelSize * nextZoom;
@@ -386,6 +516,7 @@ export function CanvasViewport() {
         <span>GRID</span>
         <code>{pixelDocument.width}x{pixelDocument.height}</code>
       </div>
+      <p className="canvas-touch-hint">두 손가락으로 이동/확대</p>
       <div
         ref={containerRef}
         data-testid="canvas-surface"
